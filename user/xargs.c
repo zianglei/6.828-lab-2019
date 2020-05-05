@@ -14,8 +14,10 @@ int main(int argc, char* argv[]) {
     }
     // read arguments from stdin
     char argbuf[ARG_MAX_LENGTH];
+    // arguments for subcommand.
     char *subargv[MAXARG];
     int subargc = 0;
+    // read subargv from argv to get subcommand and arguments
     for (; subargc + 1 < argc; subargc++) {
         subargv[subargc] = argv[subargc + 1];
     }
