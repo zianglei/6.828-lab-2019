@@ -128,71 +128,6 @@ int parsepipe(char** input, char* es) {
 	return 0;
 }
 
-//int
-//parseexec(char** input, char* es, struct cmd *c) {
-//	int args = 0, ret = 0;
-//	char *start, *end;
-//	//while(*input < es && strchr(whitespace, **input)) (*input)++;
-//	while (args < MAX_ARGS){
-//		ret = gettoken(input, es, &start, &end);
-//		LOG("gettoken ret: %c", ret);
-//		if (ret != 'a') break;
-//		c->argv[args] = start;
-//		c->eargv[args] = end;
-//		args++;
-//	}
-//	LOG("args: %d", args);
-//	if (args == 0) return -1;
-//
-//	// get all arguments, set their end to '\0'
-//	for(int i = 0; i < args; i++) {
-//		*(c->eargv[i]) = '\0';
-//	}
-////	ret = gettoken(input, es, NULL, NULL);
-//	LOG("next ret: %c", ret);
-//	if (ret == '>' || ret == '<') {
-//		// The command need redir
-//		c->dir = ret == '<' ? 1: 2;
-//		// get src or dst
-//		char* dir_name_start, *dir_name_end;
-//		ret = gettoken(input, es, &dir_name_start, &dir_name_end);
-//		if (ret != 'a') return ret;
-//		int length = (dir_name_end - dir_name_start) > MAX_DIR_FILE_LEN ? MAX_DIR_FILE_LEN : (dir_name_end - dir_name_start); 
-//		LOG("file length: %d", length);	
-//		strncpy(c->file, dir_name_start, length);
-//		*(c->file + length) = 0;
-//		return gettoken(input, es, NULL, NULL);
-//	} else {
-//		c->file[0] = 0;
-//		return ret;
-//	}
-//	return ret;
-//}
-
-
-//int
-//parsepipe(char** input, char* es) {
-//	
-//	struct cmd c;
-//	int ret;
-//	memset(&c, 0, sizeof(struct cmd));
-//	ret = parseexec(input, es, &c);
-//	cmd_list[cmd_index++] = c;
-//	if(ret == '|') {
-//		LOG("input now: %c", **input);
-//		parsepipe(input, es);
-//	}
-//	return 0;
-//}
-
-//void
-//parsecmd(char* input) {
-//	char* s= input;
-//	char* es = input + strlen(input);
-//	parsepipe(&s, es);
-//	LOG("parsecmd exit");
-//}
-
 
 void
 runcmd() {
@@ -257,75 +192,6 @@ runcmd() {
 }
 
 
-//void
-//execcmd(int i, int inp) {
-//	struct cmd c = cmd_list[i];
-//	LOG("cmd_cnt: %d", cmd_index);
-//	LOG("cmd: %s", c.argv[0]);
-//	LOG("cmd_index: %d", i);
-//	
-//	LOG("cmd_redir: %d", c.dir);
-//	LOG("cmd_redir_file: %s, len: %d", c.file, strlen(c.file));
-//	if (fork() == 0) {
-//		if (i != 0) {
-//			close(0);
-//			LOG("close stdin");
-//			dup(inp);
-//		} else {
-//			if (c.dir == 1) {
-//				close(0);
-//				LOG("redir stdin");
-//				if(open(c.file, O_RDONLY) < 0) {
-//					LOG("open %s failed", c.file);
-//				}
-//			}
-//		}
-//		close(inp);
-//		int newp[2];
-//		pipe(newp);
-//
-//		if (i != cmd_index-1) {
-//			LOG("close stdout");
-//			close(1);
-//			LOG("dup output pipe");
-//			dup(newp[1]);
-//		} else {
-//			if (c.dir == 2) {
-//				LOG("redir stdout");
-//				close(1);
-//				if(open(c.file, O_CREATE | O_WRONLY) < 0) {
-//					LOG("open %s failed", c.file);
-//				}
-//			}
-//		}
-//		close(newp[1]);
-//	
-//		if (i == cmd_index -1) {
-//			// The last command
-//			close(newp[0]);
-//			LOG("exec %s", c.argv[0]);
-//			exec(c.argv[0], c.argv);
-//		} else {
-//			LOG("fork next cmd");
-//			execcmd(i+1, newp[0]);
-//			exec(c.argv[0], c.argv);
-//		}
-//	}
-//	close(inp);
-//}
-//
-//void
-//runcmd() {
-//	int p[2];
-//	LOG("cmd_cnt: %d", cmd_index);
-//	pipe(p);
-//	close(p[1]);
-//	execcmd(0, p[0]);
-//	int t = cmd_index;
-//	while (t--) wait(0);
-//	exit(0);
-//}
-
 void clear_cmd_list() {
 	cmd_index = 0;
 }
@@ -353,6 +219,8 @@ int main() {
 	exit(0);
 }
 
+
+// gettoken is copied from "user/sh.c"
 int
 gettoken(char **ps, char *es, char **q, char **eq)
 {
@@ -395,7 +263,6 @@ gettoken(char **ps, char *es, char **q, char **eq)
   return ret;
 }
 
-// gettoken is copied from "user/sh.c"
 // peek is copied from "user/sh.c"
 int peek(char** p, char* ep, char* token) {
 	char *s;
